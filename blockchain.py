@@ -3,11 +3,30 @@ from database import save_block
 # 1. Tambahkan import ini agar fungsi verifikasi bekerja
 from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.hazmat.primitives import hashes
+import json
 
 class GoldenIndonesiaChain:
     def __init__(self):
         self.chain = [self.create_genesis_block()]
         self.is_frozen = False
+
+    def arsip_ke_json(self):
+        arsip = []
+        for block in self.chain:
+            sigs = {k: (v.hex() if v else None) for k, v in block.signatures.items()}
+            arsip.append({
+                "index": block.index,
+                "kategori": block.kategori,
+                "data": block.data,
+                "anggaran": block.anggaran,
+                "tahun": block.tahun,
+                "hash": block.hash,
+                "previous_hash": block.previous_hash,
+                "signatures": sigs
+            })
+        with open('arsip_kebijakan.json', 'w') as f:
+            json.dump(arsip, f, indent=4)
+        print("[ARSIP]: Kebijakan telah diperbarui ke arsip_kebijakan.json")
 
     def create_genesis_block(self):
         # Genesis block bisa kita tandai sebagai "Sistem" atau lewat jalur khusus

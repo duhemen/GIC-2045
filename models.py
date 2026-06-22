@@ -8,25 +8,17 @@ class Block:
     def __init__(self, index, data, previous_hash, kategori="RKT", ref_id=None, anggaran=0):
         self.index = index
         self.data = data
-        self.tahun = data.get("tahun", 2024)
-        # Tambahkan ini:
-        self.tahun = data.get("tahun", 2024) 
-    
+        self.tahun = data.get("tahun", 2024) # Hanya perlu satu baris ini
         self.previous_hash = previous_hash
         self.kategori = kategori
         self.ref_id = ref_id
+        self.anggaran = anggaran # Pastikan ini ada
         self.timestamp = time.time()
         
-        # Inisialisasi tanda tangan 5 pilar
         self.signatures = {
-            "eksekutif": None,
-            "legislatif": None,
-            "yudikatif": None,
-            "akademisi": None,
-            "privat": None
+            "eksekutif": None, "legislatif": None, "yudikatif": None,
+            "akademisi": None, "privat": None
         }
-        
-        # Hash dihitung sekali di akhir inisialisasi
         self.hash = self.calculate_hash()
 
     def calculate_hash(self):

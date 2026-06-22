@@ -27,29 +27,34 @@ def tampilkan_transparansi_bangsa(chain):
             print(f"[{b.tahun}] - Fokus: {b.data.get('fokus', 'N/A')}")
 
 def skenario_nasional():
+    print("\n--- INISIALISASI NEGARA DIGITAL GIC 2045 ---")
+    print("--- MEMULAI SKENARIO ---")
     gic = GoldenIndonesiaChain()
-    # Panggil sign_all_pillars dengan mengirimkan keys
+    
+    # 1. Fondasi & Tanda Tangan
     rpjp = gic.add_block({"tahun": 2045, "fokus": "Indonesia Emas 2045"}, kategori="RPJP")
     sign_all_pillars(rpjp, keys)
     
-    # ... (lanjutkan skenario sama seperti sebelumnya)
+    # 2. Menambah blok dengan anggaran
+    rpjm = gic.add_block({"tahun": 2030, "fokus": "Infrastruktur Digital"}, kategori="RPJM", anggaran=500000000)
+    sign_all_pillars(rpjm, keys)
+    gic.arsip_ke_json() # <--- Arsip blok RPJM
+    
+    # 3. Skenario Aspirasi (RKT)
+    usulan = "Pembangunan Infrastruktur Digital Desa"
+    rkt = gic.add_block({"tahun": 2026, "fokus": usulan}, kategori="RKT", anggaran=500000, ref_id=rpjm.hash)
+    sign_all_pillars(rkt, keys)
+    gic.arsip_ke_json() # <--- Arsip blok RKT
+    
+    # 4. Audit & Keamanan
+    gic.trace_corruption()
+    
+    # 5. Uji Coba Emergency Freeze
+    gic.freeze_chain(True)
+    gic.add_block({"tahun": 2031, "fokus": "Proyek Fiktif"}, kategori="RKT", anggaran=100)
+    
+    # Tampilkan Hasil
     tampilkan_transparansi_bangsa(gic.chain)
 
 if __name__ == "__main__":
     skenario_nasional()
-
-def skenario_nasional():
-    gic = GoldenIndonesiaChain()
-    
-    # Contoh Penggunaan Fitur:
-    # 1. Menambah blok dengan anggaran
-    rpjm = gic.add_block({"tahun": 2030, "fokus": "Infrastruktur"}, kategori="RPJM", anggaran=500000000)
-    
-    # 2. Trace Audit
-    gic.trace_corruption()
-    
-    # 3. Emergency Freeze
-    gic.freeze_chain(True)
-    
-    # Mencoba menambah blok saat beku (akan gagal)
-    gic.add_block({"tahun": 2031, "fokus": "Proyek Fiktif"}, kategori="RKT", anggaran=100)
