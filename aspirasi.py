@@ -26,3 +26,10 @@ def cek_lolos_voting():
     if hasil_voting["ya"] > hasil_voting["tidak"]:
         return True
     return False
+
+def verifikasi_akademik(usulan):
+    # Simulasi AI/Sistem mengecek data riset
+    skor_riset = 85 # Simulasi hasil riset
+    if skor_riset > 70:
+        return True, "Usulan didukung oleh bukti empiris."
+    return False, "Usulan kurang didukung data riset."
