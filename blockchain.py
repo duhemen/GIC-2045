@@ -3,7 +3,9 @@ from database import save_block
 # 1. Tambahkan import ini agar fungsi verifikasi bekerja
 from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.hazmat.primitives import hashes
+from konstitusi_digital import cek_konstitusi_luca
 import json
+
 
 class GoldenIndonesiaChain:
     def __init__(self):
@@ -35,20 +37,34 @@ class GoldenIndonesiaChain:
         # atau menandatanganinya dengan sistem kunci root khusus jika diperlukan.
         return block
 
-    def add_block(self, data, kategori="RKT", ref_id=None):
-        # Dapatkan hash blok sebelumnya sebagai previous_hash
+    def add_block(self, data, kategori="RKT", ref_id=None, anggaran=0):
+        # 1. Validasi Konstitusi LUCA (Penjaga Moral Negara)
+        # Mengecek apakah usulan sesuai dengan semangat konstitusi
+        lolos, pesan = cek_konstitusi_luca(data.get("fokus", ""))
+        if not lolos:
+            print(f"[REJECTED - KONSTITUSI]: {pesan}")
+            return None 
+
+        # 2. Logika Smart Budgeting (Cek Plafon Nasional)
+        # Contoh plafon: 1 Miliar
+        if anggaran > 1000000000:
+            print("[REJECTED - BUDGET]: Anggaran melebihi plafon nasional!")
+            return None
+
+        # 3. Dapatkan hash blok sebelumnya
         previous_hash = self.chain[-1].hash
     
-        # Buat objek Block baru dengan parameter tambahan
+        # 4. Buat objek Block baru
         new_block = Block(
             index=len(self.chain),
             data=data,
             previous_hash=previous_hash,
             kategori=kategori,
-            ref_id=ref_id
+            ref_id=ref_id,
+            anggaran=anggaran # Menambahkan atribut anggaran
         )
     
-        # Tambahkan ke dalam rantai
+        # 5. Tambahkan ke dalam rantai
         self.chain.append(new_block)
         return new_block
     
@@ -91,20 +107,26 @@ class GoldenIndonesiaChain:
         print(f"[STATUS SISTEM]: Chain telah {'DIBEKUKAN' if status else 'DIBUKA'}!")
 
     def add_block(self, data, kategori="RKT", ref_id=None, anggaran=0):
-        # Dapatkan hash blok sebelumnya sebagai previous_hash
+        # 1. Validasi Konstitusi LUCA
+        lolos, pesan = cek_konstitusi_luca(data.get("fokus", ""))
+        if not lolos:
+            print(f"[REJECTED - KONSTITUSI]: {pesan}")
+            return None # <--- PENTING: Mengembalikan None berarti tidak ada blok yang dibuat
+
+        # 2. Dapatkan hash blok sebelumnya
         previous_hash = self.chain[-1].hash
     
-        # Buat objek Block baru dengan parameter yang lengkap
+        # 3. Buat objek Block baru
         new_block = Block(
             index=len(self.chain),
             data=data,
             previous_hash=previous_hash,
             kategori=kategori,
             ref_id=ref_id,
-            anggaran=anggaran  # Tambahkan ini
+            anggaran=anggaran
         )
     
-        # Tambahkan ke dalam rantai
+        # 4. Tambahkan ke rantai hanya jika valid
         self.chain.append(new_block)
         return new_block
     
